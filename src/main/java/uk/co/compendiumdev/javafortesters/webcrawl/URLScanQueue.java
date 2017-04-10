@@ -42,6 +42,7 @@ public class URLScanQueue {
     private String reportComment;
     private List<URLCheck> internalIgnoreChecks;
     private Map<String, String> cookieJar;
+    private List<CheckBodyForText> bodyChecks = new ArrayList<CheckBodyForText>();
 
     private String htmlforCurrentURLScan() {
         StringBuffer details = new StringBuffer();
@@ -76,6 +77,8 @@ public class URLScanQueue {
         skipDuplicates = true;
         skipHashLinks = true;
         cacheReturnCodeOfExternal = false;
+
+        bodyChecks = new ArrayList<CheckBodyForText>();
 
         reportComment = "";
 
@@ -253,6 +256,10 @@ public class URLScanQueue {
 
             if(this.reportAnyHiddenFields){
                 reportOnAnyHiddenFormsOnThePage(browser, stdOutLogger);
+            }
+
+            for(CheckBodyForText checker : bodyChecks){
+                checker.check(browser, stdOutLogger);
             }
 
             queueLinksToFollowLater(browser, wcURL, stdOutLogger);
@@ -567,7 +574,11 @@ public class URLScanQueue {
 	}
 	
 	public String convertRelativeURLToAbsolute(String aRelativeUrl){
-		return this.jURL.getProtocol() + "://" + this.jURL.getHost() + aRelativeUrl;
+	    String host= this.jURL.getHost();
+	    if(this.jURL.getPort()!=-1){
+	        host = host + ":" + this.jURL.getPort();
+        }
+		return this.jURL.getProtocol() + "://" + host + aRelativeUrl;
 	}
 
 
@@ -610,5 +621,9 @@ public class URLScanQueue {
         Cookie aCookie = new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, cookieExpiry , cookieSecure);
         cookieJar.add(aCookie);
         */
+    }
+
+    public void reportAsWhenContains(String message, String whenPageContainsText) {
+        bodyChecks.add(new CheckBodyForText(message, whenPageContainsText));
     }
 }

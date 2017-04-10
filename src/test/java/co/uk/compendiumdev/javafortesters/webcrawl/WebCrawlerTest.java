@@ -31,14 +31,14 @@ public class WebCrawlerTest {
 
 
 
-        urlsq.setRootURL("http://eviltester.com");
+        urlsq.setRootURL("http://localhost:1313");
 
         urlsq.setReportComment("Run as iphone");
 
 		urlsq.followExternal(false);
         urlsq.cacheReturnCodeOfExternal(true);
         //TODO: expand subdomain to be 'in scope when' - starts with, matches regex
-        urlsq.setSubDomainURL("http://eviltester.com");
+        urlsq.setSubDomainURL("http://localhost:1313");
 		urlsq.restrictToSubURL(true);
         //  TODO: create 'out of scope when' - starts with, matches regex
 
@@ -63,8 +63,12 @@ public class WebCrawlerTest {
         urlsq.checkStatusOnLinksOnce(true);
         urlsq.skipHashLinks(true);  // TODO: should really check for fragments on the page when we scan it
         urlsq.setReportDirectoryAs("C:\\Users\\Alan\\Documents\\temp");
-		urlsq.scanFromRootURL();
 
+		urlsq.reportAsWhenContains("**Page has image markdown Present","![](");
+
+
+
+        urlsq.scanFromRootURL();
         // TODO: create list of pages - ignoring the params
         // TODO: create list of ignored internal pages
         // TODO: write to report not just stdout
