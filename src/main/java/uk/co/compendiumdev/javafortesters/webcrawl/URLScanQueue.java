@@ -226,6 +226,13 @@ public class URLScanQueue {
                       // outputScreenshotToTemporaryReport(browser, wcURL);
                    }
                    return;
+                }else{
+                    // if we didn't know about it already then
+                    if(isURLExternal(new URL(wcURL.redirectedTo()))){
+                        stdOutLogger.logStdOut("Redirected to something external - skipping");
+                        wcURL.setAsScannedInThisSession();
+                        return;
+                    }
                 }
             }
 
