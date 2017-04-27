@@ -21,6 +21,7 @@ public class HttpBrowser {
     private Map<String, String> cookieJar;
     Connection.Response lastresponse;
     boolean skipped = false;
+    private String source;
 
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
@@ -76,5 +77,13 @@ public class HttpBrowser {
         }
 
         return returnElements;
+    }
+
+    public String getSource() {
+        if(skipped){
+            return "";
+        }
+        
+        return lastresponse.body();
     }
 }

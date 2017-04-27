@@ -1,6 +1,8 @@
 package uk.co.compendiumdev.javafortesters.webcrawl;
 
 
+import uk.co.compendiumdev.javafortesters.webcrawl.htmlchecks.comments.HTMLCommentFinder;
+import uk.co.compendiumdev.javafortesters.webcrawl.htmlchecks.comments.HTMLCommentReporter;
 import uk.co.compendiumdev.javafortesters.webcrawl.urlchecker.StdOutLogger;
 import uk.co.compendiumdev.javafortesters.webcrawl.urlchecker.URLChecker;
 import uk.co.compendiumdev.javafortesters.webcrawl.urlchecker.URLStatusCheckResult;
@@ -43,6 +45,7 @@ public class URLScanQueue {
     private List<URLCheck> internalIgnoreChecks;
     private Map<String, String> cookieJar;
     private List<CheckBodyForText> bodyChecks = new ArrayList<CheckBodyForText>();
+    private boolean reportHTMLComments;
 
     private String htmlforCurrentURLScan() {
         StringBuffer details = new StringBuffer();
@@ -77,6 +80,7 @@ public class URLScanQueue {
         skipDuplicates = true;
         skipHashLinks = true;
         cacheReturnCodeOfExternal = false;
+        reportHTMLComments = false;
 
         bodyChecks = new ArrayList<CheckBodyForText>();
 
@@ -258,6 +262,10 @@ public class URLScanQueue {
                 reportOnAnyHiddenFormsOnThePage(browser, stdOutLogger);
             }
 
+            if(this.reportHTMLComments){
+                reportOnAnyHTMLCommentsOnThePage(browser, stdOutLogger);
+            }
+
             for(CheckBodyForText checker : bodyChecks){
                 checker.check(browser, stdOutLogger);
             }
@@ -279,6 +287,13 @@ public class URLScanQueue {
 		wcURL.setAsScannedInThisSession();
 		
 	}
+
+    private void reportOnAnyHTMLCommentsOnThePage(HttpBrowser browser, StdOutLogger stdOutLogger) {
+        HTMLCommentFinder comments = new HTMLCommentFinder(browser.getSource());
+        comments.findAllComments();
+
+        new HTMLCommentReporter(comments).reportTo(stdOutLogger);
+    }
 
     private void queueLinksToFollowLater(HttpBrowser browser, WebCrawlURL wcURL, StdOutLogger stdOutLogger) throws Exception {
         List<HtmlElement> links = browser.findElements("a[href]");
@@ -485,7 +500,9 @@ public class URLScanQueue {
             }
         }
 
-        URLStatusCheckResult urlCheck = URLChecker.checkThisURL(absoluteURL, stdOutLogger);
+        URLStatusCheckResult urlCheck;
+
+        urlCheck = URLChecker.checkThisURL(absoluteURL, stdOutLogger);
 
         if(shouldICache){
             resultCache.put(absoluteURL, urlCheck);
@@ -570,6 +587,15 @@ public class URLScanQueue {
 		if(href.startsWith("/")){
 			return true;
 		}
+        if(href.startsWith("./")){
+		    // TODO - need current URL to make this absolute so this will probably fail in converstion to absolute
+            return true;
+        }
+        if(href.startsWith("../")){
+            // TODO - need current URL to make this absolute so this will probably fail in converstion to absolute
+            return true;
+        }
+
 		return false;
 	}
 	
@@ -625,5 +651,9 @@ public class URLScanQueue {
 
     public void reportAsWhenContains(String message, String whenPageContainsText) {
         bodyChecks.add(new CheckBodyForText(message, whenPageContainsText));
+    }
+
+    public void setReportHTMLComments(boolean reportHTMLComments) {
+        this.reportHTMLComments = reportHTMLComments;
     }
 }

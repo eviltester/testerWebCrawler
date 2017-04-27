@@ -32,7 +32,8 @@ public class URLChecker {
             tempLogger.logStdOut("Page Status Error: " + e);
             returnCheck.exceptionCheck(e);
             e.printStackTrace();
-            throw e;
+            //do not throw the exception
+            // throw e;
         }
 
         return returnCheck;
