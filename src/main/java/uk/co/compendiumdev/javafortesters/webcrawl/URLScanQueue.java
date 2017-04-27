@@ -229,9 +229,11 @@ public class URLScanQueue {
                 }else{
                     // if we didn't know about it already then
                     if(isURLExternal(new URL(wcURL.redirectedTo()))){
-                        stdOutLogger.logStdOut("Redirected to something external - skipping");
-                        wcURL.setAsScannedInThisSession();
-                        return;
+                        if(!followExternal) {
+                            stdOutLogger.logStdOut("Redirected to something external - skipping");
+                            wcURL.setAsScannedInThisSession();
+                            return;
+                        }
                     }
                 }
             }
