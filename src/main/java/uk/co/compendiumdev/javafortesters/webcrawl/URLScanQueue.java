@@ -367,7 +367,7 @@ public class URLScanQueue {
 
             } catch (Exception e) {
                 follow = false;
-                noFollowReason += " malformed url -";
+                noFollowReason += " - " + e.getClass().getName() + " - ";
             }
 
 

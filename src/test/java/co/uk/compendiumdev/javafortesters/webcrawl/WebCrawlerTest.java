@@ -32,14 +32,15 @@ public class WebCrawlerTest {
 
 
         urlsq.setRootURL("http://compendiumdev.co.uk");
+        urlsq.setSubDomainURL("http://compendiumdev.co.uk");
+        urlsq.restrictToSubURL(true);
+
 
         urlsq.setReportComment("Run as iphone");
 
 		urlsq.followExternal(false);
         urlsq.cacheReturnCodeOfExternal(true);
         //TODO: expand subdomain to be 'in scope when' - starts with, matches regex
-        urlsq.setSubDomainURL("http://compendiumdev.co.uk");
-		urlsq.restrictToSubURL(true);
         //  TODO: create 'out of scope when' - starts with, matches regex
 
         // https://site.com/m/stop?url=https%3A%2F%2Fwww.Full+HTML+Redirect
